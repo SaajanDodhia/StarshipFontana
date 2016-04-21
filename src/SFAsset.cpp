@@ -134,6 +134,7 @@ shared_ptr<SFBoundingBox> SFAsset::GetBoundingBox() {
 
 void SFAsset::SetNotAlive() {
   type = SFASSET_DEAD;
+  
 }
 
 bool SFAsset::IsAlive() {
@@ -141,7 +142,13 @@ bool SFAsset::IsAlive() {
 }
 
 void SFAsset::HandleCollision() {
-  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type) {
+  if(SFASSET_PROJECTILE == type /* || SFASSET_ALIEN == type*/) {
+    SetNotAlive();
+  }
+}
+  
+void SFAsset::HandleCollision2() {
+  if(SFASSET_PLAYER == type  || SFASSET_ALIEN == type) {
     SetNotAlive();
   }
 }

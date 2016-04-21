@@ -1,4 +1,4 @@
-#ifndef SFAPP_H
+    #ifndef SFAPP_H
 #define SFAPP_H
 
 #include <memory>   // Pull in std::shared_ptr
