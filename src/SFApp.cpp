@@ -13,7 +13,7 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
   for(int i=0; i<number_of_aliens; i++) {
     // place an alien at width/number_of_aliens * i
     auto alien = make_shared<SFAsset>(SFASSET_ALIEN, sf_window);
-    auto pos   = Point2((canvas_w/number_of_aliens) * i, 200.0f);
+    auto pos   = Point2((canvas_w/number_of_aliens) * i + 25, 200.0f);
     alien->SetPosition(pos);
     aliens.push_back(alien);
   }
@@ -42,16 +42,44 @@ void SFApp::OnEvent(SFEvent& event) {
     OnRender();
     break;
   case SFEVENT_PLAYER_LEFT:
-    player->GoWest();
+  player->GoWest();
+  for (auto a: aliens) 
+    {
+  if (player->CollidesWith(a))
+    {
+        player->GoEast();  
+    }
+}
     break;
   case SFEVENT_PLAYER_RIGHT:
-    player->GoEast();
+   player->GoEast();
+    for (auto a: aliens) 
+{
+  if (player->CollidesWith(a))
+    {
+        player->GoWest(); 
+    }
+}
     break;
    case SFEVENT_PLAYER_UP:
     player->GoNorth();
+    for (auto a: aliens) 
+{
+  if (player->CollidesWith(a))
+    {
+        player->GoSouth();  
+    }
+}
     break;
    case SFEVENT_PLAYER_DOWN:
     player->GoSouth();
+      for (auto a: aliens) 
+{
+  if (player->CollidesWith(a))
+    {
+        player->GoNorth();  
+    }
+}
     break; 
   case SFEVENT_FIRE:
     fire ++;

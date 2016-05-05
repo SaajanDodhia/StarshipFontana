@@ -7,7 +7,7 @@ SFAsset::SFAsset(SFASSETTYPE type, std::shared_ptr<SFWindow> window): type(type)
 
   switch (type) {
   case SFASSET_PLAYER:
-    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/player.png");
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/pacman.gif");
     break;
   case SFASSET_PROJECTILE:
     sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/projectile.png");
@@ -113,15 +113,21 @@ void SFAsset::GoEast() {
 }
 
 void SFAsset::GoNorth() {
+  int w, h;
+  SDL_GetRendererOutputSize(sf_window->getRenderer(), &w, &h);
   Vector2 c = *(bbox->centre) + Vector2(0.0f, 5.0f);
-  bbox->centre.reset();
-  bbox->centre = make_shared<Vector2>(c);
+  if(!(c.getY() > h)) {
+    bbox->centre.reset();
+    bbox->centre = make_shared<Vector2>(c);
+ }
 }
 
 void SFAsset::GoSouth() {
   Vector2 c = *(bbox->centre) + Vector2(0.0f, -5.0f);
-  bbox->centre.reset();
-  bbox->centre = make_shared<Vector2>(c);
+ if(!(c.getY() < 0)) {
+    bbox->centre.reset();
+    bbox->centre = make_shared<Vector2>(c);
+ }
 }
 
 bool SFAsset::CollidesWith(shared_ptr<SFAsset> other) {
@@ -142,13 +148,9 @@ bool SFAsset::IsAlive() {
 }
 
 void SFAsset::HandleCollision() {
-  if(SFASSET_PROJECTILE == type /* || SFASSET_ALIEN == type*/) {
+  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type) {
     SetNotAlive();
   }
 }
   
-void SFAsset::HandleCollision2() {
-  if(SFASSET_PLAYER == type  || SFASSET_ALIEN == type) {
-    SetNotAlive();
-  }
-}
+
