@@ -18,6 +18,9 @@ SFAsset::SFAsset(SFASSETTYPE type, std::shared_ptr<SFWindow> window): type(type)
   case SFASSET_COIN:
     sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/coin.png");
     break;
+  case SFASSET_WALL:
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/wall.png");
+    break;
   }
 
   if(!sprite) {
@@ -119,8 +122,12 @@ void SFAsset::GoNorth() {
   if(!(c.getY() > h)) {
     bbox->centre.reset();
     bbox->centre = make_shared<Vector2>(c);
+    }
+    else if (SFASSET_PROJECTILE == type) {
+    SetNotAlive();
+    }
  }
-}
+
 
 void SFAsset::GoSouth() {
   Vector2 c = *(bbox->centre) + Vector2(0.0f, -5.0f);

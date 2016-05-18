@@ -1,5 +1,5 @@
 #include "SFApp.h"
-
+int score = 0;
 SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_window(window) {
   int canvas_w, canvas_h;
   SDL_GetRendererOutputSize(sf_window->getRenderer(), &canvas_w, &canvas_h);
@@ -9,13 +9,22 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
   auto player_pos = Point2(canvas_w/2, 22);
   player->SetPosition(player_pos);
 
-  const int number_of_aliens = 10;
+  const int number_of_aliens = 3;
   for(int i=0; i<number_of_aliens; i++) {
     // place an alien at width/number_of_aliens * i
     auto alien = make_shared<SFAsset>(SFASSET_ALIEN, sf_window);
-    auto pos   = Point2((canvas_w/number_of_aliens) * i + 25, 200.0f);
+    auto pos   = Point2((canvas_w/number_of_aliens) * i + 110, 300.0f);
     alien->SetPosition(pos);
     aliens.push_back(alien);
+  }  
+    
+ const int number_of_walls = 4;
+  for(int i=0; i<number_of_walls; i++) {
+    // place a wall at width/number_of_walls * i
+    auto wall = make_shared<SFAsset>(SFASSET_WALL, sf_window);
+    auto pos   = Point2((canvas_w/number_of_walls) * i + 70, 150.0f);
+    wall->SetPosition(pos);
+    walls.push_back(wall);  
   }
 
   auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
@@ -49,8 +58,16 @@ void SFApp::OnEvent(SFEvent& event) {
     {
         player->GoEast();  
     }
+   }
+   for (auto w: walls) 
+    {
+  if (player->CollidesWith(w))
+    {
+        player->GoEast();  
+    }
 }
     break;
+    
   case SFEVENT_PLAYER_RIGHT:
    player->GoEast();
     for (auto a: aliens) 
@@ -58,6 +75,13 @@ void SFApp::OnEvent(SFEvent& event) {
   if (player->CollidesWith(a))
     {
         player->GoWest(); 
+    }
+   }
+  for (auto w: walls) 
+    {
+  if (player->CollidesWith(w))
+    {
+        player->GoWest();  
     }
 }
     break;
@@ -69,6 +93,13 @@ void SFApp::OnEvent(SFEvent& event) {
     {
         player->GoSouth();  
     }
+   }
+  for (auto w: walls) 
+    {
+  if (player->CollidesWith(w))
+    {
+        player->GoSouth();  
+    }
 }
     break;
    case SFEVENT_PLAYER_DOWN:
@@ -76,6 +107,13 @@ void SFApp::OnEvent(SFEvent& event) {
       for (auto a: aliens) 
 {
   if (player->CollidesWith(a))
+    {
+        player->GoNorth();  
+    }
+  }
+  for (auto w: walls) 
+    {
+  if (player->CollidesWith(w))
     {
         player->GoNorth();  
     }
@@ -120,11 +158,25 @@ void SFApp::OnUpdateWorld() {
       if(p->CollidesWith(a)) {
         p->HandleCollision();
         a->HandleCollision();
-        
+        score = score + 10;
+        std::cout<< "Score: " << score << std::endl;
+       
       }
     }
+    
   }
-
+  
+   for(auto p : projectiles) {
+    for(auto w : walls) {
+      if(p->CollidesWith(w)) {
+        p->HandleCollision();
+        w->HandleCollision();
+      }
+    }
+    
+  }
+  
+  
   // remove dead aliens (the long way)
   list<shared_ptr<SFAsset>> tmp;
   for(auto a : aliens) {
@@ -142,6 +194,10 @@ void SFApp::OnRender() {
   // draw the player
   player->OnRender();
 
+  for (auto w: walls) {
+    w->OnRender();
+    }
+    
   for(auto p: projectiles) {
     if(p->IsAlive()) {p->OnRender();}
   }
