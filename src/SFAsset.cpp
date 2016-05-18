@@ -7,7 +7,7 @@ SFAsset::SFAsset(SFASSETTYPE type, std::shared_ptr<SFWindow> window): type(type)
 
   switch (type) {
   case SFASSET_PLAYER:
-    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/pacman.gif");
+    sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/player.png");
     break;
   case SFASSET_PROJECTILE:
     sprite = IMG_LoadTexture(sf_window->getRenderer(), "assets/projectile.png");
@@ -119,7 +119,7 @@ void SFAsset::GoNorth() {
   int w, h;
   SDL_GetRendererOutputSize(sf_window->getRenderer(), &w, &h);
   Vector2 c = *(bbox->centre) + Vector2(0.0f, 5.0f);
-  if(!(c.getY() > h)) {
+  if(!(c.getY() > h) || SFASSET_PLAYER != type) {
     bbox->centre.reset();
     bbox->centre = make_shared<Vector2>(c);
     }
